@@ -219,7 +219,7 @@ def tweet_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Tweet updated successfully!")
-            return redirect("tweet_detail", pk=pk)
+            return redirect("tweets:tweet_detail", pk=pk)
         else:
             # Check for specific file size errors
             if "image" in form.errors:
@@ -247,6 +247,6 @@ def tweet_delete(request, pk):
     if request.method == "POST":
         tweet.delete()
         messages.success(request, "Tweet deleted successfully!")
-        return redirect("tweet_list")
+        return redirect("tweets:tweet_list")
 
     return render(request, "tweets/delete.html", {"tweet": tweet})
