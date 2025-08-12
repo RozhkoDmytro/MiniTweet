@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Tweet - MiniTweet</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .delete-container { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 20px; }
+        .btn { padding: 8px 16px; margin: 0 5px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .tweet-preview { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <h1>Delete Tweet</h1>
+    
+    <div class="delete-container">
+        <h3>⚠️ Are you sure you want to delete this tweet?</h3>
+        <p>This action cannot be undone.</p>
+        
+        <div class="tweet-preview">
+            <strong>@{{ tweet.user.username }}</strong>
+            <small>{{ tweet.created_at|date:"M d, Y H:i" }}</small>
+            <p>{{ tweet.text }}</p>
+            {% if tweet.image %}
+                <img src="{{ tweet.image.url }}" alt="Tweet image" style="max-width: 200px; border-radius: 5px;">
+            {% endif %}
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete Tweet</button>
+            <a href="{% url 'tweets:tweet_detail' tweet.pk %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

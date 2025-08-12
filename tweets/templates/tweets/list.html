@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MiniTweet</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .tweet-form { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+        .tweet { border: 1px solid #e1e8ed; border-radius: 10px; margin: 15px 0; padding: 20px; }
+        .tweet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .tweet-actions { margin-top: 15px; }
+        .btn { padding: 8px 16px; margin: 0 5px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; }
+        .btn-primary { background: #1da1f2; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .tweet-image { max-width: 100%; border-radius: 5px; margin-top: 10px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin: 5px 0; }
+        .messages { margin: 20px 0; }
+        .message { padding: 10px; border-radius: 5px; margin: 5px 0; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>🐦 MiniTweet</h1>
+    
+    <!-- Messages display -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <!-- Tweet creation form -->
+    <div class="tweet-form">
+        <h3>Create New Tweet</h3>
+        <form method="post" enctype="multipart/form-data" action="" id="tweetForm">
+            {% csrf_token %}
+            <div>
+                <label for="{{ form.text.id_for_label }}">Tweet Text:</label>
+                {{ form.text }}
+            </div>
+            <div>
+                <label for="{{ form.image.id_for_label }}">Image (optional):</label>
+                {{ form.image }}
+                <div id="fileSizeError" style="color: #dc3545; font-size: 12px; margin-top: 5px; display: none;">
+                    File too large! Maximum size is 5MB.
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitBtn">Post Tweet</button>
+        </form>
+        
+        <!-- Debug info -->
+        <div style="margin-top: 10px; font-size: 12px; color: #666;">
+            <p>Debug: Form fields available: {{ form.fields.keys|join:", " }}</p>
+            <p>Debug: Current user: {{ user.username|default:"Not authenticated" }}</p>
+        </div>
+    </div>
+
+    <script>
+        // File size validation
+        document.getElementById('{{ form.image.id_for_label }}').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const errorDiv = document.getElementById('fileSizeError');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (file && file.size > maxSize) {
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.5';
+                submitBtn.style.cursor = 'not-allowed';
+                
+                // Clear the file input
+                e.target.value = '';
+                
+                // Show user-friendly message
+                alert('File too large! Maximum file size is 5MB. Tweet cannot be published.');
+            } else {
+                errorDiv.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+            }
+        });
+        
+        // Form submission validation
+        document.getElementById('tweetForm').addEventListener('submit', function(e) {
+            const fileInput = document.getElementById('{{ form.image.id_for_label }}');
+            const file = fileInput.files[0];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            
+            if (file && file.size > maxSize) {
+                e.preventDefault();
+                alert('File too large! Maximum file size is 5MB. Tweet cannot be published.');
+                return false;
+            }
+        });
+    </script>
+    
+    <!-- Tweets list -->
+    <h3>Recent Tweets</h3>
+    {% for tweet in tweets %}
+        <div class="tweet">
+            <div class="tweet-header">
+                <strong>@{{ tweet.user.username }}</strong>
+                <small>{{ tweet.created_at|date:"M d, Y H:i" }}</small>
+            </div>
+            <p>{{ tweet.text }}</p>
+            {% if tweet.image %}
+                <img src="{{ tweet.image.url }}" alt="Tweet image" class="tweet-image">
+            {% endif %}
+            <div class="tweet-actions">
+                <a href="{% url 'tweets:tweet_detail' tweet.pk %}" class="btn btn-secondary">View & Reply</a>
+                <!-- Edit/Delete buttons temporarily disabled for non-authenticated users -->
+            </div>
+        </div>
+    {% empty %}
+        <p>No tweets yet. Be the first to post!</p>
+    {% endfor %}
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Tweet - MiniTweet</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .form-container { background: #f8f9fa; padding: 20px; border-radius: 10px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin: 5px 0; }
+        .btn { padding: 8px 16px; margin: 0 5px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; }
+        .btn-primary { background: #1da1f2; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .current-image { margin: 10px 0; }
+        .current-image img { max-width: 200px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Edit Tweet</h1>
+    
+    <div class="form-container">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div>
+                <label for="{{ form.text.id_for_label }}">Tweet Text:</label>
+                {{ form.text }}
+            </div>
+            
+            <div>
+                <label for="{{ form.image.id_for_label }}">Image:</label>
+                {{ form.image }}
+                <div id="fileSizeError" style="color: #dc3545; font-size: 12px; margin-top: 5px; display: none;">
+                    File too large! Maximum size is 5MB.
+                </div>
+                {% if tweet.image %}
+                    <div class="current-image">
+                        <p>Current image:</p>
+                        <img src="{{ tweet.image.url }}" alt="Current tweet image">
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary" id="submitBtn">Update Tweet</button>
+                <a href="{% url 'tweets:tweet_detail' tweet.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // File size validation
+        document.getElementById('{{ form.image.id_for_label }}').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const errorDiv = document.getElementById('fileSizeError');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (file && file.size > maxSize) {
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.5';
+                submitBtn.style.cursor = 'not-allowed';
+                
+                // Clear the file input
+                e.target.value = '';
+                
+                // Show user-friendly message
+                alert('File too large! Maximum file size is 5MB. Tweet cannot be updated.');
+            } else {
+                errorDiv.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+            }
+        });
+        
+        // Form submission validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const fileInput = document.getElementById('{{ form.image.id_for_label }}');
+            const file = fileInput.files[0];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            
+            if (file && file.size > maxSize) {
+                e.preventDefault();
+                alert('File too large! Maximum file size is 5MB. Tweet cannot be updated.');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>
