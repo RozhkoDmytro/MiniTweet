@@ -2,7 +2,6 @@ import logging
 from django.http import HttpResponseBadRequest
 from django.contrib import messages
 from django.shortcuts import redirect
-from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 
