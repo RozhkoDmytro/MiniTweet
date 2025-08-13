@@ -48,7 +48,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "tweets.middleware.FileSizeMiddleware",  # Custom middleware for file size validation
+    "tweets.middleware.database_check.DatabaseCheckMiddleware",  # Database health check
 ]
 
 ROOT_URLCONF = "minitweet.urls"
