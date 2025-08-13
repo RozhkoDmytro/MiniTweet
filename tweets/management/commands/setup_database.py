@@ -170,3 +170,5 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.WARNING(f"⚠️  Could not create default superuser: {e}")
             )
+
+

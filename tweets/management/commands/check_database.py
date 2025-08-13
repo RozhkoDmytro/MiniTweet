@@ -178,3 +178,5 @@ class Command(BaseCommand):
             db_host = connection.settings_dict.get("HOST", "Unknown")
             db_port = connection.settings_dict.get("PORT", "Unknown")
             self.stdout.write(f"  🗄️  Connected to: {db_name} on {db_host}:{db_port}")
+
+
