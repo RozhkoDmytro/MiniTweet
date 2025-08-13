@@ -11,6 +11,12 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'minitweet.settings')
+# Check if we're running in Docker environment
+if os.environ.get("DJANGO_SETTINGS_MODULE"):
+    settings_module = os.environ.get("DJANGO_SETTINGS_MODULE")
+else:
+    settings_module = "minitweet.settings"
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_module)
 
 application = get_wsgi_application()

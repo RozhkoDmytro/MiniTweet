@@ -1,21 +1,18 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks.
-
-Quick Start:
-1. Activate virtual environment: source env/bin/activate
-2. Run server: python manage.py runserver
-3. Access: http://127.0.0.1:8000/
-4. Admin: http://127.0.0.1:8000/admin/ (admin/admin)
-
-PostgreSQL: tweet_db (postgres/admin)
-"""
+"""Django's command-line utility for administrative tasks."""
 import os
 import sys
 
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "minitweet.settings")
+    # Check if we're running in Docker environment
+    if os.environ.get("DJANGO_SETTINGS_MODULE"):
+        settings_module = os.environ.get("DJANGO_SETTINGS_MODULE")
+    else:
+        settings_module = "minitweet.settings"
+
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_module)
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
