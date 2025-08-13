@@ -2,22 +2,62 @@ services:
   postgres:
     image: postgres:15
     container_name: minitweet_postgres
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: tweet_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: ${DB_NAME:-tweet_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d tweet_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-tweet_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - minitweet_network
+
+  web:
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile}
+    container_name: minitweet_web
+    env_file:
+      - .env
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/static
+    environment:
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-minitweet.docker_settings}
+      - DEBUG=${DEBUG:-1}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-tweet_db}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-admin}
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-*-yfj-ak#ppp!*h7+4wwnb$hhpop*m+b)c_y0o28#h1dh63594}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - minitweet_network
 
 volumes:
   postgres_data:
     driver: local
+  media_data:
+    driver: local
+  static_data:
+    driver: local
+
+networks:
+  minitweet_network:
+    driver: bridge
