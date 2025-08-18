@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Open Repository on Dev Branch",
+      "type": "shell",
+      "command": "echo 'Opening branch in browser...' && python3 -m webbrowser 'https://github.com/RozhkoDmytro/MiniTweet/tree/'$(git branch --show-current) || python -m webbrowser 'https://github.com/RozhkoDmytro/MiniTweet/tree/'$(git branch --show-current)",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Git: Sync Current Branch with Dev",
+      "type": "shell",
+      "command": "git fetch origin && git merge origin/dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "showReuseMessage": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
