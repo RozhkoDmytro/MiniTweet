@@ -16,11 +16,11 @@ echo "Database is ready!"
 
 # Run database migrations
 echo "Running database migrations..."
-python manage.py migrate
+python manage.py migrate --settings=minitweet.docker_settings
 
 # Create superuser if it doesn't exist (optional)
 echo "Checking for superuser..."
-python manage.py shell -c "
+python manage.py shell --settings=minitweet.docker_settings -c "
 from django.contrib.auth import get_user_model
 User = get_user_model()
 if not User.objects.filter(username='admin').exists():
@@ -32,8 +32,12 @@ else:
 
 # Collect static files
 echo "Collecting static files..."
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --settings=minitweet.docker_settings
 
 # Start the application
 echo "Starting Django application..."
-exec "$@"
+if [ "$1" = "python" ] && [ "$2" = "manage.py" ] && [ "$3" = "runserver" ]; then
+    exec python manage.py runserver 0.0.0.0:8000 --settings=minitweet.docker_settings
+else
+    exec "$@"
+fi
