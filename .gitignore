@@ -16,6 +16,10 @@ terraform/static_data/
 # Crash log files
 crash.log
 
+
+# environment variables
+.env
+
 # Cursor
 .cursor/
 
