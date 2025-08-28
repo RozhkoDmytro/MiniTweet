@@ -12,6 +12,8 @@ terraform.rc
 terraform/postgres_data/
 terraform/media_data/
 terraform/static_data/
+terraform/jenkins_data/
+terraform/jenkins_agent_data/
 
 # Crash log files
 crash.log
@@ -25,3 +27,34 @@ crash.log
 
 #VsCode
 .vscode/
+
+#Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pywz
+*.pyzw
+*.pyzwz
+
+#Logs
+logs/
+*.log
+
+#Jenkins
+jenkins_data/
+jenkins_agent_data/
+
+#Docker
+docker/
+
+#Env
+venv/
+.venv/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
